@@ -16,8 +16,7 @@
 #### 代码示例
 ```julia
 using NumericalAnalysis.Fundamentals
-q = Polynomial([3, -1, 4])  # 输出为 3x^2-x+4
 p = Polynomial([1, 2, 0, 1], :t)  # 输出为 t^3+2t^2+1
-eval_poly(p, 1)  # 0
+eval_poly(p, 1)  # 3
 p(1) == eval_poly(p, 1)  # true
 ```
