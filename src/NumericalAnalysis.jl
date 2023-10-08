@@ -1,5 +1,4 @@
 module NumericalAnalysis
-
-greet() = print("Hello World!")
-
+include("Fundamentals/Polynomial.jl")
+export Poly, Poly
 end # module NumericalAnalysis
