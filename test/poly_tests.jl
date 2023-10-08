@@ -1,5 +1,6 @@
-using NumericalAnalysis.Poly
+using NumericalAnalysis.Fundamentals
 using Test
+
 
 @testset "构造函数传参测试" begin
     # 至少需要传入一个参数
@@ -32,10 +33,15 @@ using Test
     @test_throws ArgumentError Polynomial([0, 1, 2])
 end
 
-@testset "多项式次数测试" begin
+@testset "次数测试" begin
     @test degree(Polynomial([0])) == -1
     @test degree(Polynomial([1])) == 0
     n = rand(1:344)
     @test degree(Polynomial(rand(n))) == n-1
     @test Polynomial(rand(n)).degree == n-1
+end
+
+@testset "输出测试" begin
+    @test repr(MIME("text/plain"), Polynomial([1, 2, 0, 1])) == "x^3+2x^2+1"
+    @test repr(MIME("text/plain"), Polynomial([2, 1, 3, 4], :t)) == "2t^3+t^2+3t+4"
 end

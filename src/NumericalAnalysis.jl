@@ -1,4 +1,4 @@
 module NumericalAnalysis
-include("Fundamentals/Polynomial.jl")
-export Poly, Poly
+include("Fundamentals/Fundamentals.jl")
+export Fundamentals
 end # module NumericalAnalysis

@@ -3,11 +3,12 @@
 
 [![codecov](https://codecov.io/gh/tangxiangong/NumericalAnalysis.jl/graph/badge.svg?token=58LNBU2BVF)](https://codecov.io/gh/tangxiangong/NumericalAnalysis.jl)
 
-## 进度
-- **Chapter 0. Fundamentals**
-  - [Evaluating a Polynomial](./src/Fundamentals/Polynomial.jl)
-    - [x] `Polynomial{<:Real}` 类型
-    - [x] 返回多项式次数的函数/成员变量 `degree` (由 `Base.getproperty` 实现)
-    - [x] 重载 `Base.show` 自定义纯文本输出 
-    - [ ] 使用 `Latexify.jl` 在 `Jupyter`/`Pluto.jl`/... 中实现 $\LaTeX$ 输出
-    - [x] 重载 `Base.:-` 得到关于加法运算的逆元 
+## Chapter 0. Fundamentals
+### 0.1. [Evaluating a Polynomial](./src/Fundamentals/Polynomial.jl)
+多项式相关计算, 更专业全面的实现可见 [Polynomials.jl](https://github.com/JuliaMath/Polynomials.jl).
+#### 进展
+- [x] 实多项式类型 `Polynomial{<:Real}(::Vector{<:Real}, ::Symbol)`
+- [x] 多项式次数 `degree(::Polynomial)`, `Base.getproperty(::Polynomial, :degree)` 
+- [x] 自定义纯文本输出 `Base.show(::Polynomial)`
+- [ ] 在 Jupyter/Pluto/... 中实现 $\LaTeX$ 输出 (利用 [Latexify.jl](https://github.com/korsbo/Latexify.jl))
+- [x] 加法逆元 `Base.:-(::Polynomial)`
