@@ -56,3 +56,19 @@ function Base.show(io::IO, ::MIME"text/plain", p::Polynomial)
     end
     return print(io, str)
 end
+
+"""
+秦九韶算法求多项式值
+"""
+function eval_poly(p::Polynomial, x::Real)
+    coe = p.coe
+    p.degree <= 0 && return coe[1]
+    result = zero(promote_type(eltype(coe), typeof(x)))
+    result += coe[1] * x + coe[2]
+    for k=3:p.degree+1
+        result = result * x + coe[k]
+    end
+    return result
+end
+
+(p::Polynomial)(x::Real) = eval_poly(p, x)

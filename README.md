@@ -12,3 +12,12 @@
 - [x] 自定义纯文本输出 `Base.show(::Polynomial)`
 - [ ] 在 Jupyter/Pluto/... 中实现 $\LaTeX$ 输出 (利用 [Latexify.jl](https://github.com/korsbo/Latexify.jl))
 - [x] 加法逆元 `Base.:-(::Polynomial)`
+- [x] 秦九韶算法求值 `eval_poly(::Polynomial)`, `(p::Polynomial)(x::Real)`
+#### 代码示例
+```julia
+using NumericalAnalysis.Fundamentals
+q = Polynomial([3, -1, 4])  # 输出为 3x^2-x+4
+p = Polynomial([1, 2, 0, 1], :t)  # 输出为 t^3+2t^2+1
+eval_poly(p, 1)  # 0
+p(1) == eval_poly(p, 1)  # true
+```
