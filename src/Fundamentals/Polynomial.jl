@@ -72,3 +72,74 @@ function eval_poly(p::Polynomial, x::Real)
 end
 
 (p::Polynomial)(x::Real) = eval_poly(p, x)
+
+"""
+比较相等
+"""
+Base.:(==)(p::Polynomial, q::Polynomial) = eltype(p.coe)==eltype(q.coe) && p.coe == q.coe && p.var == q.var
+
+"""
+判断 0 多项式
+"""
+Base.iszero(p::Polynomial) = Base.iszore(p.coe[1])
+"""
+判断常多项式
+"""
+isconstant(p::Polynomial) = length(p.coe) == 1
+
+"""
+求导
+"""
+function ∂(p::Polynomial)::Polynomial
+    coe = p.coe
+    n = p.degree
+    isconstant(p) && return Polynomial([zero(eltype(coe))], p.var)
+    ncoe = Vector{eltype(coe)}(undef, n)
+    for (k, a) in enumerate(@view coe[1:end-1])
+        @inbounds ncoe[k] = a * (n-k+1)
+    end
+    return Polynomial(ncoe, p.var)
+end
+
+"""
+将向量中第一个非零元素前的元素全部pop
+"""
+function _popzerofirst!(v::Vector{<:Real})
+    temp = findfirst(!iszero, v)
+    index = isnothing(temp) ? length(v) : temp
+    for _ in 1:index-1
+        popfirst!(v)
+    end
+end
+
+"""
+在向量(copy)的头部插入n个0
+"""
+_insertzerofirst(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(zeros(eltype(v), n), v) : throw(ArgumentError("第二个参数为正整数"))
+
+"""
+多项式加法
+"""
+function Base.:+(p::Polynomial, q::Polynomial)    
+    p.var == q.var || throw(ArgumentError("两个多项式的自变量要相同"))
+    n = length(p.coe)
+    m = length(q.coe)
+    if n == m
+        ncoe = p.coe + q.coe
+    elseif n > m
+        ncoe = p.coe + _insertzerofirst(q.coe, n-m)
+    else
+        ncoe = q.coe + _insertzerofirst(p.coe, m-n)
+    end
+    _popzerofirst!(ncoe)
+    return Polynomial(ncoe, p.var)
+end
+"""
+加法逆元
+"""
+Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var)
+
+"""
+多项式减法
+"""
+Base.:-(p::Polynomial, q::Polynomial) = Base.:+(p, -q)
