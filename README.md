@@ -12,7 +12,7 @@
 - [x] 自定义纯文本输出 `Base.show(::Polynomial)`
 - [ ] 在 Jupyter/Pluto/... 中实现 $\LaTeX$ 输出 (利用 [Latexify.jl](https://github.com/korsbo/Latexify.jl))
 - [x] 加法逆元 `Base.:-(::Polynomial)`
-- [x] 秦九韶算法求值 `eval_poly(::Polynomial)`, `(p::Polynomial)(x::Real)`
+- [x] 秦九韶算法求值 `eval_poly(::Polynomial)`, `(::Polynomial)(::Real)`
 - [x] 加/减法和求导运算 `Base.:+(::Polynomial, ::Polynomial)`, `Base.:-(::Polynomial, ::Polynomial)`, `∂(::Polynomial)`
 - [x] 标量乘法 `Base.:*(::Real, ::Polynomial)` 和多项式乘法 `Base.:*(::Polynomial, ::Polynomial)` (利用 [FFTW.jl](https://github.com/JuliaMath/FFTW.jl) 计算乘积的系数)
 #### 代码示例

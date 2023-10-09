@@ -169,10 +169,14 @@ function Base.:*(p::Polynomial, q::Polynomial)
     p.var == q.var || throw(ArgumentError("两个多项式的变量不同, 暂不支持多元多项式"))
     T = promote_type(eltype(p.coe), eltype(q.coe))
     iszero(p) || iszero(q) && return zero(Polynomial{T})
-    a = _insertzerolast(p.coe, q.degree)
-    b = _insertzerolast(q.coe, p.degree)
-    coe = real.(ifft(fft(a) .* fft(b)))
-    if T<:Integer 
+    n = 1
+    while n < p.degree + q.degree + 1
+        n <<= 1
+    end
+    a = _insertzerolast(p.coe, n-length(p.coe))
+    b = _insertzerolast(q.coe, n-length(q.coe))
+    coe = @view real.(ifft(fft(a) .* fft(b)))[1:p.degree+q.degree+1]
+    if T <: Integer 
         coe = map(x->round(T, x), coe)
     end
     return Polynomial(coe, p.var)
