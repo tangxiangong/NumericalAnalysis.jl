@@ -81,7 +81,14 @@ Base.:(==)(p::Polynomial, q::Polynomial) = eltype(p.coe)==eltype(q.coe) && p.coe
 """
 判断 0 多项式
 """
-Base.iszero(p::Polynomial) = Base.iszore(p.coe[1])
+Base.iszero(p::Polynomial) = Base.iszero(p.coe[1])
+
+"""
+生成0多项式
+"""
+Base.zero(::Type{Polynomial{T}}, var::Symbol= :x) where T<:Real = Polynomial(zeros(T, 1), var)
+Base.zero(::Type{Polynomial}, var::Symbol= :x)  = Polynomial(zeros(Int, 1), var)
+
 """
 判断常多项式
 """
@@ -117,6 +124,8 @@ end
 """
 _insertzerofirst(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(zeros(eltype(v), n), v) : throw(ArgumentError("第二个参数为正整数"))
 
+_insertzerolast(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(v, zeros(eltype(v), n)) : throw(ArgumentError("第二个参数为正整数"))
+
 """
 多项式加法
 """
@@ -143,3 +152,28 @@ Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var)
 多项式减法
 """
 Base.:-(p::Polynomial, q::Polynomial) = Base.:+(p, -q)
+
+"""
+多项式标量乘法
+"""
+function Base.:*(a::Real, p::Polynomial)
+    iszero(a) || iszero(p) && return zero(typeof(p))
+    return Polynomial(a*p.coe, p.var)
+end
+
+using FFTW
+"""
+两个多项式的乘法
+"""
+function Base.:*(p::Polynomial, q::Polynomial)
+    p.var == q.var || throw(ArgumentError("两个多项式的变量不同, 暂不支持多元多项式"))
+    T = promote_type(eltype(p.coe), eltype(q.coe))
+    iszero(p) || iszero(q) && return zero(Polynomial{T})
+    a = _insertzerolast(p.coe, q.degree)
+    b = _insertzerolast(q.coe, p.degree)
+    coe = real.(ifft(fft(a) .* fft(b)))
+    if T<:Integer 
+        coe = map(x->round(T, x), coe)
+    end
+    return Polynomial(coe, p.var)
+end

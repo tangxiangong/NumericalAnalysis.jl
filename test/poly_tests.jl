@@ -44,6 +44,7 @@ end
 @testset "输出测试" begin
     @test repr(MIME("text/plain"), Polynomial([1, 2, 0, 1])) == "x^3+2x^2+1"
     @test repr(MIME("text/plain"), Polynomial([2, 1, 3, 4], :t)) == "2t^3+t^2+3t+4"
+    @test repr(MIME("text/plain"), Polynomial([1, 4])) == "x+4"
 end
 
 @testset "求值测试" begin
@@ -97,4 +98,9 @@ end
     @test -p1 == Polynomial([-1, -2, -3])
     @test p1+p2 == Polynomial([1, 2, 5])
     @test p1-p2 == Polynomial([1, 2, 1])
+end
+
+@testset "乘法测试" begin
+    p = Polynomial([1, 2, 1])
+    @test p * p == Polynomial([1, 4, 6, 4, 1])
 end
