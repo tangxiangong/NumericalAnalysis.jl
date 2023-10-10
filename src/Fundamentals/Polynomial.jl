@@ -31,9 +31,9 @@ degree(p::Polynomial) :: Int = p.coe[1] == 0 ? -1 : length(p.coe) - 1
 """
 将上面求出的多项式次数作为多项式本身的性质
 """
-Base.getproperty(p::Polynomial, sym::Symbol) = sym === :degree ? degree(p) : getfield(p, sym)
+@inline Base.getproperty(p::Polynomial, sym::Symbol) = sym === :degree ? degree(p) : getfield(p, sym)
 
-function Base.show(io::IO, ::MIME"text/plain", p::Polynomial)
+@inline function Base.show(io::IO, ::MIME"text/plain", p::Polynomial)
     n = degree(p)
     n <= 0 && return print(io, "$(p.coe[1])")
     if n == 1
@@ -60,7 +60,7 @@ end
 """
 秦九韶算法求多项式值
 """
-function evaluate(p::Polynomial, x::Real)
+@inline function evaluate(p::Polynomial, x::Real)
     coe = p.coe
     p.degree <= 0 && return coe[1]
     result = zero(promote_type(eltype(coe), typeof(x)))
@@ -71,33 +71,33 @@ function evaluate(p::Polynomial, x::Real)
     return result
 end
 
-(p::Polynomial)(x::Real) = evaluate(p, x)
+@inline (p::Polynomial)(x::Real) = evaluate(p, x)
 
 """
 比较相等
 """
-Base.:(==)(p::Polynomial, q::Polynomial) = eltype(p.coe)==eltype(q.coe) && p.coe == q.coe && p.var == q.var
+@inline Base.:(==)(p::Polynomial, q::Polynomial) = eltype(p.coe)==eltype(q.coe) && p.coe == q.coe && p.var == q.var
 
 """
 判断 0 多项式
 """
-Base.iszero(p::Polynomial) = Base.iszero(p.coe[1])
+@inline Base.iszero(p::Polynomial) = Base.iszero(p.coe[1])
 
 """
 生成0多项式
 """
-Base.zero(::Type{Polynomial{T}}, var::Symbol= :x) where T<:Real = Polynomial(zeros(T, 1), var)
-Base.zero(::Type{Polynomial}, var::Symbol= :x)  = Polynomial(zeros(Int, 1), var)
+@inline Base.zero(::Type{Polynomial{T}}, var::Symbol= :x) where T<:Real = Polynomial(zeros(T, 1), var)
+@inline Base.zero(::Type{Polynomial}, var::Symbol= :x)  = Polynomial(zeros(Int, 1), var)
 
 """
 判断常多项式
 """
-isconstant(p::Polynomial) = length(p.coe) == 1
+@inline isconstant(p::Polynomial) = length(p.coe) == 1
 
 """
 求导
 """
-function ∂(p::Polynomial)::Polynomial
+@inline function ∂(p::Polynomial)::Polynomial
     coe = p.coe
     n = p.degree
     isconstant(p) && return Polynomial([zero(eltype(coe))], p.var)
@@ -111,7 +111,7 @@ end
 """
 将向量中第一个非零元素前的元素全部pop
 """
-function _popzerofirst!(v::Vector{<:Real})
+@inline function _popzerofirst!(v::Vector{<:Real})
     temp = findfirst(!iszero, v)
     index = isnothing(temp) ? length(v) : temp
     for _ in 1:index-1
@@ -122,14 +122,14 @@ end
 """
 在向量(copy)的头部插入n个0
 """
-_insertzerofirst(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(zeros(eltype(v), n), v) : throw(ArgumentError("第二个参数为正整数"))
+@inline _insertzerofirst(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(zeros(eltype(v), n), v) : throw(ArgumentError("第二个参数为正整数"))
 
-_insertzerolast(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(v, zeros(eltype(v), n)) : throw(ArgumentError("第二个参数为正整数"))
+@inline _insertzerolast(v::Vector{<:Real}, n::Integer) = n >= 1 ? vcat(v, zeros(eltype(v), n)) : throw(ArgumentError("第二个参数为正整数"))
 
 """
 多项式加法
 """
-function Base.:+(p::Polynomial, q::Polynomial)    
+@inline function Base.:+(p::Polynomial, q::Polynomial)    
     p.var == q.var || throw(ArgumentError("两个多项式的自变量要相同"))
     n = length(p.coe)
     m = length(q.coe)
@@ -146,17 +146,17 @@ end
 """
 加法逆元
 """
-Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var)
+@inline Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var)
 
 """
 多项式减法
 """
-Base.:-(p::Polynomial, q::Polynomial) = Base.:+(p, -q)
+@inline Base.:-(p::Polynomial, q::Polynomial) = Base.:+(p, -q)
 
 """
 多项式标量乘法
 """
-function Base.:*(a::Real, p::Polynomial)
+@inline function Base.:*(a::Real, p::Polynomial)
     iszero(a) || iszero(p) && return zero(typeof(p))
     return Polynomial(a*p.coe, p.var)
 end
@@ -165,10 +165,12 @@ using FFTW
 """
 两个多项式的乘法
 """
-function Base.:*(p::Polynomial, q::Polynomial)
+@inline function Base.:*(p::Polynomial, q::Polynomial)
     p.var == q.var || throw(ArgumentError("两个多项式的变量不同, 暂不支持多元多项式"))
     T = promote_type(eltype(p.coe), eltype(q.coe))
     iszero(p) || iszero(q) && return zero(Polynomial{T})
+    isconstant(p) && return Polynomial(p.coe[1]*q.coe, p.var)
+    isconstant(q) && return Polynomial(q.coe[1]*p.coe, p.var)
     n = 1
     while n < p.degree + q.degree + 1
         n <<= 1
@@ -180,4 +182,17 @@ function Base.:*(p::Polynomial, q::Polynomial)
         coe = map(x->round(T, x), coe)
     end
     return Polynomial(coe, p.var)
+end
+
+
+function from_roots(roots::Vector{<:Real}, a::Real=1, var::Symbol= :x) :: Polynomial
+    isempty(roots) && throw(ArgumentError("根向量不能为空"))
+    n = length(roots)
+    T = promote_type(eltype(roots), typeof(a))
+    iszero(a) && return zero(Polynomial{T})
+    p = Polynomial([T(a)], var)
+    @inbounds for k in 1:n
+        p *= Polynomial([one(T), -roots[k]])
+    end
+    return p
 end

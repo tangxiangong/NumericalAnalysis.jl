@@ -51,6 +51,8 @@ end
     p = Polynomial([1, 2, -3, 4])
     @test evaluate(p, 1) == 4
     @test p(1) == 4
+    f(x) = x^3+2x^2-3x+4
+    @test p.([1.5, 9, 4]) == f.([1.5, 9, 4])
 end
 
 @testset "判断测试" begin
@@ -103,4 +105,9 @@ end
 @testset "乘法测试" begin
     p = Polynomial([1, 2, 1])
     @test p * p == Polynomial([1, 4, 6, 4, 1])
+end
+
+@testset "from_roots 测试" begin
+    @test_throws ArgumentError from_roots(Vector{Int}())
+    @test from_roots([2,2,2,3]) == Polynomial([1, -9, 30, -44, 24])
 end
