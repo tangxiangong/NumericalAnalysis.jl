@@ -8,3 +8,7 @@ end
 @testset "非线性方程求根测试" begin
     include("nonlinear_tests.jl")
 end
+
+@testset "指数积分子测试" begin
+    include("exponentialintegrators_test.jl")
+end
