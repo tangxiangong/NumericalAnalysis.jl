@@ -12,7 +12,7 @@
 - [x] 自定义纯文本输出 `Base.show(::Polynomial)`
 - [ ] 在 Jupyter/Pluto/... 中实现 $\LaTeX$ 输出 (利用 [Latexify.jl](https://github.com/korsbo/Latexify.jl))
 - [x] 加法逆元 `Base.:-(::Polynomial)`
-- [x] 秦九韶算法求值 `eval_poly(::Polynomial)`, `(::Polynomial)(::Real)`
+- [x] 秦九韶算法求值 `evaluate(::Polynomial)`, `(::Polynomial)(::Real)`
 - [x] 加/减法和求导运算 `Base.:+(::Polynomial, ::Polynomial)`, `Base.:-(::Polynomial, ::Polynomial)`, `∂(::Polynomial)`
 - [x] 标量乘法 `Base.:*(::Real, ::Polynomial)` 和多项式乘法 `Base.:*(::Polynomial, ::Polynomial)` (利用 [FFTW.jl](https://github.com/JuliaMath/FFTW.jl) 计算乘积的系数)
 #### 代码示例
@@ -22,7 +22,7 @@ p = Polynomial([1, 2, 0, 1], :t)  # 输出为 t^3+2t^2+1
 q = Polynomial([1, 2, 1], :t) 
 -q    # -t^2-2t-1
 eval_poly(p, 1)  # 3
-p(1) == eval_poly(p, 1)  # true
+p(1) == evaluate(p, 1)  # true
 ∂(p)   # 3t^2+4t
 p + q; p-q; p*q
 ```

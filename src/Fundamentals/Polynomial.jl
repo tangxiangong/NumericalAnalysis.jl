@@ -60,7 +60,7 @@ end
 """
 秦九韶算法求多项式值
 """
-function eval_poly(p::Polynomial, x::Real)
+function evaluate(p::Polynomial, x::Real)
     coe = p.coe
     p.degree <= 0 && return coe[1]
     result = zero(promote_type(eltype(coe), typeof(x)))
@@ -71,7 +71,7 @@ function eval_poly(p::Polynomial, x::Real)
     return result
 end
 
-(p::Polynomial)(x::Real) = eval_poly(p, x)
+(p::Polynomial)(x::Real) = evaluate(p, x)
 
 """
 比较相等

@@ -1,4 +1,4 @@
 module Fundamentals
 include("Polynomial.jl")
-export Polynomial, degree, eval_poly, ∂, _popzerofirst!, _insertzerofirst, isconstant 
+export Polynomial, degree, evaluate, ∂, _popzerofirst!, _insertzerofirst, isconstant 
 end
