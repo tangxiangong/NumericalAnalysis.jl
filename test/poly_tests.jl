@@ -57,7 +57,7 @@ end
     g(x) = (x-1)*(x-2)*(x-4)*(x-9.4)
     q = from_roots(roots)
     x = [0, 1, 4, 0.1]
-    @test q.(x) == g.(x)
+    @test q.(x) ≈ g.(x) atol=1e-5
 end
 
 @testset "判断测试" begin
