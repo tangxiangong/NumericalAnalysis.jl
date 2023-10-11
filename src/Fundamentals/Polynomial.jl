@@ -6,20 +6,21 @@
 struct Polynomial{T <: Real}
     coe::Vector{<:Real}
     var::Symbol
-    function Polynomial{T}(coe::Vector{<:Real}, var::Symbol=:x) where T <: Real
+    roots::Vector{<:Real}
+    function Polynomial{T}(coe::Vector{<:Real}, var::Symbol=:x, roots::Vector{<:Real}=Vector{Int}()) where T <: Real
         isempty(coe) && throw(ArgumentError("系数向量不能为空"))
         promote_type(T, eltype(coe)) == T || throw(ArgumentError("系数类型需为多项式类型的子集"))
         if length(coe) > 1
             coe[1] == 0 && throw(ArgumentError("除了 0 多项式, 其它多项式的最高次项系数不能为 0"))
         end
         if T != eltype(coe)
-            new{T}(Vector{T}(coe), var)
+            new{T}(Vector{T}(coe), var, roots)
         else
-            new{T}(coe, var)
+            new{T}(coe, var, roots)
         end
     end
 end
-Polynomial(coe::Vector{<:Real}, var::Symbol=:x) = Polynomial{eltype(coe)}(coe, var)
+Polynomial(coe::Vector{<:Real}, var::Symbol=:x, roots::Vector{<:Real}=Vector{Int}()) = Polynomial{eltype(coe)}(coe, var, roots)
 
 """
     degree(p::Polynomial)::Int
@@ -35,24 +36,26 @@ degree(p::Polynomial) :: Int = p.coe[1] == 0 ? -1 : length(p.coe) - 1
 
 @inline function Base.show(io::IO, ::MIME"text/plain", p::Polynomial)
     n = degree(p)
-    n <= 0 && return print(io, "$(p.coe[1])")
+    var = p.var
+    coe = p.coe
+    n <= 0 && return print(io, "$(coe[1])")
     if n == 1
-        str = abs(p.coe[1]) != 1 ? "$(p.coe[1])$(p.var)" : (p.coe[1] == 1 ? "$(p.var)" : "-$(p.var)")
+        str = abs(coe[1]) != 1 ? "$(coe[1])$(var)" : (coe[1] == 1 ? "$(var)" : "-$(var)")
     else
-        str = abs(p.coe[1]) != 1 ? "$(p.coe[1])$(p.var)^$n" : (p.coe[1] == 1 ? "$(p.var)^$n" : "-$(p.var)^$n")
+        str = abs(coe[1]) != 1 ? "$(coe[1])$(var)^$n" : (coe[1] == 1 ? "$(var)^$n" : "-$(var)^$n")
     end
     for k in 2:n-1
-        p.coe[k] == 0 && continue
-        if p.coe[k] > 0 
+        coe[k] == 0 && continue
+        if coe[k] > 0 
             str *= "+"
         end
-        str *= abs(p.coe[k]) == 1 ? "$(p.var)^$(n-k+1)" : "$(p.coe[k])$(p.var)^$(n-k+1)"
+        str *= abs(coe[k]) == 1 ? "$(var)^$(n-k+1)" : "$(coe[k])$(var)^$(n-k+1)"
     end
-    if n > 1 && p.coe[n] != 0 
-        str *= p.coe[n] > 0 ? "+$(p.coe[n])$(p.var)" : "$(p.coe[n])$(p.var)"
+    if n > 1 && coe[n] != 0 
+        str *= coe[n] > 0 ? "+$(coe[n])$(var)" : "$(coe[n])$(var)"
     end
-    if p.coe[n+1] != 0 
-        str *= p.coe[n+1] > 0 ? "+$(p.coe[n+1])" :  "$(p.coe[n+1])"
+    if coe[n+1] != 0 
+        str *= coe[n+1] > 0 ? "+$(coe[n+1])" :  "$(coe[n+1])"
     end
     return print(io, str)
 end
@@ -62,16 +65,32 @@ end
 """
 @inline function evaluate(p::Polynomial, x::Real)
     coe = p.coe
-    p.degree <= 0 && return coe[1]
+    n = degree(p)
+    n <= 0 && return coe[1]
     result = zero(promote_type(eltype(coe), typeof(x)))
     result += coe[1] * x + coe[2]
-    for k=3:p.degree+1
+    for k=3:n+1
         result = result * x + coe[k]
     end
     return result
 end
 
-@inline (p::Polynomial)(x::Real) = evaluate(p, x)
+"""
+在已知所有(实)根的情况下, 进行多项式求值
+"""
+@inline function qevaluate(p::Polynomial, x::Real)
+    roots = p.roots
+    coe = p.coe
+    T = promote_type(eltype(coe), typeof(x))
+    x in roots && return zero(T)
+    result = coe[1] * one(T)
+    @inbounds for k in eachindex(roots)
+        result *= x - roots[k]
+    end
+    return result
+end
+
+@inline (p::Polynomial)(x::Real) = isempty(p.roots) ? evaluate(p, x) : qevaluate(p, x)
 
 """
 比较相等
@@ -146,7 +165,7 @@ end
 """
 加法逆元
 """
-@inline Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var)
+@inline Base.:-(p::Polynomial) = Polynomial(-p.coe, p.var, p.roots)
 
 """
 多项式减法
@@ -158,7 +177,7 @@ end
 """
 @inline function Base.:*(a::Real, p::Polynomial)
     iszero(a) || iszero(p) && return zero(typeof(p))
-    return Polynomial(a*p.coe, p.var)
+    return Polynomial(a*p.coe, p.var, p.roots)
 end
 
 using FFTW
@@ -167,32 +186,36 @@ using FFTW
 """
 @inline function Base.:*(p::Polynomial, q::Polynomial)
     p.var == q.var || throw(ArgumentError("两个多项式的变量不同, 暂不支持多元多项式"))
-    T = promote_type(eltype(p.coe), eltype(q.coe))
+    var = p.var
+    pcoe, qcoe = p.coe, q.coe
+    proots, qroots = p.roots, q.roots
+    T = promote_type(eltype(pcoe), eltype(qcoe))
     iszero(p) || iszero(q) && return zero(Polynomial{T})
-    isconstant(p) && return Polynomial(p.coe[1]*q.coe, p.var)
-    isconstant(q) && return Polynomial(q.coe[1]*p.coe, p.var)
+    isconstant(p) && return Polynomial(pcoe[1]*qcoe, var, qroots)
+    isconstant(q) && return Polynomial(qcoe[1]*pcoe, var, proots)
     n = 1
-    while n < p.degree + q.degree + 1
+    dp, dq = degree(p), degree(q)
+    while n < dp + dq + 1
         n <<= 1
     end
-    a = _insertzerolast(p.coe, n-length(p.coe))
-    b = _insertzerolast(q.coe, n-length(q.coe))
-    coe = @view real.(ifft(fft(a) .* fft(b)))[1:p.degree+q.degree+1]
+    a = _insertzerolast(pcoe, n-length(pcoe))
+    b = _insertzerolast(qcoe, n-length(qcoe))
+    coe = real.(ifft(fft(a) .* fft(b)))[1:dp+dq+1]
     if T <: Integer 
         coe = map(x->round(T, x), coe)
     end
-    return Polynomial(coe, p.var)
+    roots = !isempty(proots) && !isempty(qroots) ? vcat(proots, qroots) : Vector{Int}()
+    return Polynomial(coe, var, roots)
 end
 
 
 function from_roots(roots::Vector{<:Real}, a::Real=1, var::Symbol= :x) :: Polynomial
     isempty(roots) && throw(ArgumentError("根向量不能为空"))
-    n = length(roots)
     T = promote_type(eltype(roots), typeof(a))
     iszero(a) && return zero(Polynomial{T})
-    p = Polynomial([T(a)], var)
-    @inbounds for k in 1:n
-        p *= Polynomial([one(T), -roots[k]])
+    p = Polynomial(a*[1, -roots[1]], var, [roots[1]])
+    @inbounds for k in firstindex(roots)+1:lastindex(roots)
+        p *= Polynomial([one(T), -roots[k]], var, [roots[k]])
     end
     return p
 end

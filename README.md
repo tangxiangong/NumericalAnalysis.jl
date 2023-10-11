@@ -28,7 +28,7 @@ p(1) == evaluate(p, 1)  # true
 p + q; p-q; p*q
 ```
 
-## Chapter 2. Solving Equations
+## Chapter 1. Solving Equations
 [求解非线性方程组](./src/NonLinearSolve/NonLinearSolve.jl)
 - [x] 二分法 `bisection(::Function, ::Tuple{<:Real, <:Real}, ::Float64=1e-8)`
 - [x] 不动点迭代法 `fixedpoint(::Function, ::Real; ::Union{Function, Nothing}=nothing, ::Float64=1e-8, ::Int=10_000)`

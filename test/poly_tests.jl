@@ -53,6 +53,11 @@ end
     @test p(1) == 4
     f(x) = x^3+2x^2-3x+4
     @test p.([1.5, 9, 4]) == f.([1.5, 9, 4])
+    roots = [1, 2, 4, 9.4]
+    g(x) = (x-1)*(x-2)*(x-4)*(x-9.4)
+    q = from_roots(roots)
+    x = [0, 1, 4, 0.1]
+    @test q.(x) == g.(x)
 end
 
 @testset "判断测试" begin
