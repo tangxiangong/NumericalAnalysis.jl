@@ -7,6 +7,10 @@ using NumericalAnalysis.NonLinearSolve
     @test bisection(x->x^2-2, (1, 2)) ≈ sqrt(2) 
 end
 
+@testset "牛顿迭代法测试" begin
+    @test newton(x->x^2-2, 1) ≈ sqrt(2) atol=1e-4
+end
+
 # @testset "不动点测试" begin
 #     # @test fixedpoint(x->x^2-2, 2) ≈ sqrt(2)
 # end

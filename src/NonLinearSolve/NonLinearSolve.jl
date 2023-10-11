@@ -2,7 +2,7 @@
 非线性方程求根
 """
 module NonLinearSolve
-export bisection, fixedpoint
+export bisection, fixedpoint, newton
 
 """
 二分法
@@ -32,4 +32,27 @@ function fixedpoint(func::Function, init_point::Real; iter_func::Union{Function,
     throw(AssertionError("超过设置的迭代最大阈值, 请调整迭代初值或迭代函数"))
 end
 
+import Symbolics:@variables, Differential, substitute, expand_derivatives, value
+"""
+牛顿迭代法
+
+如果没有提供导函数, 就尝试使用符号计算求出导函数
+"""
+function newton(f::Function, x₀::Real; df::Union{Nothing, Function}=nothing, atol::Float64=1e-8, maxiter::Integer=10_000)
+    if isnothing(df)
+        try
+            @variables t
+            D = Differential(t)
+            Df = expand_derivatives(D(f(t)))
+            df = x->(substitute.(Df, (Dict(t=>x),))[1] |> value)
+        catch  
+            throw(ArgumentError("请提供导函数!"))
+        end
+    end
+    for _ in 1:maxiter
+        x₀ = x₀-f(x₀)/df(x₀)
+        abs(f(x₀)) <= atol && return x₀
+        x₀ = x₀-f(x₀)/df(x₀)
+    end
+end 
 end
