@@ -32,3 +32,4 @@ p + q; p-q; p*q
 [求解非线性方程组](./src/NonLinearSolve/NonLinearSolve.jl)
 - [x] 二分法 `bisection(::Function, ::Tuple{<:Real, <:Real}, ::Float64=1e-8)`
 - [x] 不动点迭代法 `fixedpoint(::Function, ::Real; ::Union{Function, Nothing}=nothing, ::Float64=1e-8, ::Int=10_000)`
+- [x] 牛顿迭代法 `newton(::Function, ::Real; ::Union{Nothing, Function}=nothing, ::Float64=1e-8, ::Integer=10_000)`
