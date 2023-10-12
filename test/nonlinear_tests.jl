@@ -11,6 +11,9 @@ end
     @test newton(x->x^2-2, 1) ≈ sqrt(2) atol=1e-4
 end
 
-# @testset "不动点测试" begin
-#     # @test fixedpoint(x->x^2-2, 2) ≈ sqrt(2)
-# end
+@testset "不动点测试" begin
+    f(x) = x^3+x-1
+    g(x) = (1+2x^3)/(1+3x^2)
+    x = fixedpoint(f, 0.5, iter_func=g)
+    @test f(x) ≈ 0 atol=1e-5
+end
