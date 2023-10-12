@@ -3,4 +3,4 @@
 Manifest.toml
 _test.jl
 VEM/
-# ExponentialIntegrators/
+ExponentialIntegrators/
