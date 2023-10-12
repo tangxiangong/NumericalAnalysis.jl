@@ -1,6 +1,3 @@
-"""
-非线性方程求根
-"""
 module NonLinearSolve
 export bisection, fixedpoint, newton
 
