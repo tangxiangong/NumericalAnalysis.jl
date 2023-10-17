@@ -2,5 +2,5 @@
 
 ```@autodocs
 Modules = [Fundamentals]
-Order = [:function, :type] 
+Order = [:type, :function] 
 ```

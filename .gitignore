@@ -5,3 +5,4 @@ _test.jl
 VEM/
 ExponentialIntegrators/
 exponentialintegrators_test.jl
+docs/build

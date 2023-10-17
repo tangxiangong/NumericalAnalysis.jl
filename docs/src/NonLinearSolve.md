@@ -2,5 +2,5 @@
 
 ```@autodocs
 Modules = [NumericalAnalysis.NonLinearSolve]
-Order = [:function, :type] 
+Order = [:function] 
 ```
