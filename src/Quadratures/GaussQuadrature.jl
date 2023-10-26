@@ -38,12 +38,11 @@ function *(I::Integrand, dx::GaussQ)
     end
     s
 end
-
-# Gauss-Legendra 测试
-# 被积函数
-f(x) = x^5
-# Legendra 多项式次数
-order = 10
-# 数值积分
-dx = discretization((0, 1), 5, mode=:legendra)
-@show ∫(f)*dx
+# # Gauss-Legendra 测试
+# # 被积函数
+# f(x) = x^5
+# # Legendra 多项式次数
+# order = 10
+# # 数值积分
+# dx = discretization((0, 1), 5, mode=:legendra)
+# @show ∫(f)*dx

@@ -8,3 +8,7 @@ end
 @testset "非线性方程求根测试" begin
     include("nonlinear_tests.jl")
 end
+
+@testset "数值积分测试" begin
+    include("quadratures_tests.jl")
+end
