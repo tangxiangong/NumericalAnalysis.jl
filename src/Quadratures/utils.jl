@@ -4,9 +4,8 @@ struct Integrand
     name::Function 
 end
 
-"""
-    Gauss 积分中的节点和权重
-"""
+
+# Gauss 积分中的节点和权重
 struct WeightsNodes
     weights::Vector{Float64}
     nodes::Vector{Float64}

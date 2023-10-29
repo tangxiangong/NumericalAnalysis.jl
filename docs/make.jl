@@ -18,7 +18,8 @@ makedocs(sitename = "NumericalAnalysis",
     pages = [
         "首页" => "index.md",
         "多项式" => "Fundamentals.md",
-        "非线性方程求解" => "NonLinearSolve.md"
+        "非线性方程求解" => "NonLinearSolve.md",
+        "数值积分" => "Quadrature.md"
         # "Manual" => Any[
         #     "man/guide.md"
         # ],

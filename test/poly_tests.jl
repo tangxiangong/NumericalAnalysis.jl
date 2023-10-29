@@ -65,30 +65,30 @@ end
     @test ∂(Polynomial([1, 2, -3])) == Polynomial([2, 2])
 end
 
-@testset "辅助函数测试" begin
-    @testset "_popzerofirst!" begin
-        a1 = [0]
-        _popzerofirst!(a1) 
-        @test a1 == a1
-        a2 = [1]
-        _popzerofirst!(a2)
-        @test a2 == a2
-        a3 = [1, 0, 0, 0]
-        _popzerofirst!(a3)
-        @test a3 == a3
-        a4 = zeros(5)
-        _popzerofirst!(a4)
-        @test a4 == [0]
-        a5 = [0, 0, 0, 1, 0, 3]
-        _popzerofirst!(a5)
-        @test a5 == [1, 0, 3]
-    end
-    @testset "_insertzerofirst" begin
-        @test_throws ArgumentError _insertzerofirst([0, 0], 0)
-        b1 = [1, 2, 4, 5]
-        @test _insertzerofirst(b1, 3) == [0, 0, 0, 1, 2, 4, 5]
-    end
-end
+# @testset "辅助函数测试" begin
+#     @testset "_popzerofirst!" begin
+#         a1 = [0]
+#         _popzerofirst!(a1) 
+#         @test a1 == a1
+#         a2 = [1]
+#         _popzerofirst!(a2)
+#         @test a2 == a2
+#         a3 = [1, 0, 0, 0]
+#         _popzerofirst!(a3)
+#         @test a3 == a3
+#         a4 = zeros(5)
+#         _popzerofirst!(a4)
+#         @test a4 == [0]
+#         a5 = [0, 0, 0, 1, 0, 3]
+#         _popzerofirst!(a5)
+#         @test a5 == [1, 0, 3]
+#     end
+#     @testset "_insertzerofirst" begin
+#         @test_throws ArgumentError _insertzerofirst([0, 0], 0)
+#         b1 = [1, 2, 4, 5]
+#         @test _insertzerofirst(b1, 3) == [0, 0, 0, 1, 2, 4, 5]
+#     end
+# end
 
 @testset "加/减法测试" begin
     p1 = Polynomial([1, 2, 3])

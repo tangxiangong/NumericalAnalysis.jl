@@ -2,7 +2,9 @@ module NonLinearSolve
 export bisection, fixedpoint, newton
 
 """
-二分法
+    bisection(func::Function, domain::Tuple{<:Real, <:Real}, ε::Float64=1e-8)
+
+二分法求解函数 `func` 的位于区间 `domain` 的根, 停机准则误差为 `ε`.
 """
 function bisection(func::Function, domain::Tuple{<:Real, <:Real}, ε::Float64=1e-8)
     a, b = domain    
@@ -17,7 +19,9 @@ function bisection(func::Function, domain::Tuple{<:Real, <:Real}, ε::Float64=1e
 end
 
 """
-不动点
+    fixedpoint(func::Function, init_point::Real; iter_func::Union{Function, Nothing}=nothing, iter_atol::Float64=1e-8, maxiter::Int=10_000)
+
+不动点迭代求解多项式 `func` 的根, `init_point` 为迭代的初始值, `iter_func` 为迭代函数, 若未给定, 则默认为 `x-func(x)`, `iter_atol` 为停机准则误差, `maxiter` 为最大迭代步数.
 """
 function fixedpoint(func::Function, init_point::Real; iter_func::Union{Function, Nothing}=nothing, iter_atol::Float64=1e-8, maxiter::Int=10_000)
     g = isnothing(iter_func) ?  x -> x - func(x) : iter_func
@@ -31,9 +35,9 @@ end
 
 import Symbolics:@variables, Differential, substitute, expand_derivatives, value
 """
-牛顿迭代法
+    newton(f::Function, x₀::Real; df::Union{Nothing, Function}=nothing, atol::Float64=1e-8, maxiter::Integer=10_000)
 
-如果没有提供导函数, 就尝试使用符号计算求出导函数
+牛顿迭代法求解函数 `f` 的根, `x₀` 为迭代的初始值, `df` 为函数 `f` 的导函数, 如果没有提供导函数, 就尝试使用符号计算 (`Symbolics.jl`) 求出导函数, `atol` 为停机准则误差, `maxiter` 为最大迭代步数.
 """
 function newton(f::Function, x₀::Real; df::Union{Nothing, Function}=nothing, atol::Float64=1e-8, maxiter::Integer=10_000)
     if isnothing(df)

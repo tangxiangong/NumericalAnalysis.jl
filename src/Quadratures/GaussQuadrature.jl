@@ -1,6 +1,18 @@
 module GaussQ
     import ..Quadrature:Integrand, WeightsNodes
     import Base:*
+    """
+    Gauss 积分公式.
+
+    # 例子
+    ```julia
+    domain = (0, 1)    # 积分区间
+    order = 10         # 多项式次数
+    dx = discretization(domain, order) 
+    f(x) = ... 
+    I = ∫(f)*dx        # 数值积分结果
+    ```
+    """
     function *(I::Integrand, dx::WeightsNodes)
         weights, nodes = dx.weights, dx.nodes
         func = I.name
@@ -11,22 +23,3 @@ module GaussQ
         s
     end
 end
-
-
-
-# # Gauss-Legendra 测试
-# # 被积函数
-# f(x) = x^5
-# # Legendra 多项式次数
-# order = 10
-# # 数值积分
-# dx = discretization((0, 1), 5, mode=:legendra)
-# @show ∫(f)*dx
-# method=:Legendre
-# poly = Symbol("guass", lowercase(String(method)))
-# w, b = Expr(:call, poly, 10) |> eval
-
-# macro orthpoly(method, degree)
-#     func = Symbol("gauss", lowercase(String(method)))
-#     return Expr(:call, func, degree)
-# end
