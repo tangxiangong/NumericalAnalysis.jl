@@ -1,6 +1,6 @@
-# NumericalAnalysis.NonLinearSolve
-
+# NumericalAnalysis.Quadrature
+## GaussQ
 ```@autodocs
-Modules = [NumericalAnalysis.Quadrature]
+Modules = [NumericalAnalysis.Quadrature.GaussQ]
 Order = [:function] 
 ```
