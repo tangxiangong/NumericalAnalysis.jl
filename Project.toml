@@ -1,6 +1,6 @@
 name = "NumericalAnalysis"
 uuid = "0d97b697-bd25-42f5-83fa-54c1184dd8d3"
-authors = ["小雨 <xiaoyu@xiaoxiaoyu.me>"]
+authors = ["小雨 <tangxiangong@outlook.com>"]
 version = "0.1.0"
 
 [deps]
@@ -10,7 +10,7 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 FFTW = "1"
-julia = "1.9"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
