@@ -1,6 +1,4 @@
 .vscode
 .DS_Store
 Manifest.toml
-_test.jl
-ExponentialIntegrators/
 docs/build
