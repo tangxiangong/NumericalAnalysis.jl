@@ -1,6 +1,5 @@
 module GaussQ
     import ..Quadrature:Integrand, WeightsNodes
-    import Base:*
     """
     Gauss 积分公式.
 

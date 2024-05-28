@@ -1,5 +1,7 @@
 using FastGaussQuadrature
 
+import Base.*
+
 struct Integrand 
     name::Function 
 end
@@ -25,3 +27,13 @@ end
 discretization(interval::NTuple{2, Real}, degree::Integer; method=:Legendre) = weights_and_nodes(degree, interval; method)
 
 ∫(func::Function) = Integrand(func)
+
+function *(I::Integrand, dx::WeightsNodes)
+    weights, nodes = dx.weights, dx.nodes
+    func = I.name
+    s = 0.0
+    for k in eachindex(nodes)
+        s += weights[k] * func(nodes[k])
+    end
+    s
+end
